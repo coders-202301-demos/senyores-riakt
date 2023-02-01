@@ -9,4 +9,4 @@ export interface GentlemanStructure {
   selected: boolean;
 }
 
-export type Gentlemen = GentlemanStructure[];
+export type GentlemenStructure = GentlemanStructure[];

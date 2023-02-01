@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Info from "./components/Info/Info";
-import { GentlemanStructure, Gentlemen } from "./data/types";
-import gentlemenList from "./data/gentlemen";
-import Gentleman from "./components/Gentleman/Gentleman";
+import { GentlemanStructure, GentlemenStructure } from "./data/types";
 import Button from "./components/Button/Button";
+import Gentlemen from "./components/Gentlemen/Gentlemen";
 
 const App = (): JSX.Element => {
-  const [gentlemen, setGentlemen] = useState<Gentlemen>(gentlemenList);
+  const [gentlemen, setGentlemen] = useState<GentlemenStructure>([]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(process.env.REACT_APP_URL_API!);
+      const gentlemenApi = (await response.json()) as GentlemenStructure;
+
+      setGentlemen(gentlemenApi);
+    })();
+  }, []);
 
   const selectAllGentlemen = () => {
     setGentlemen(
@@ -29,7 +37,18 @@ const App = (): JSX.Element => {
     );
   };
 
-  const removeGentleman = (gentlemanToRemove: GentlemanStructure) => {
+  const removeGentleman = async (gentlemanToRemove: GentlemanStructure) => {
+    const response = await fetch(
+      `${process.env.REACT_APP_URL_API}${gentlemanToRemove.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      return;
+    }
+
     setGentlemen(
       gentlemen.filter((gentleman) => gentleman.id !== gentlemanToRemove.id)
     );
@@ -45,16 +64,11 @@ const App = (): JSX.Element => {
         <Button selectAll={selectAllGentlemen} />
       </section>
       <main className="main">
-        <ul className="gentlemen">
-          {gentlemen.map((gentleman) => (
-            <Gentleman
-              key={gentleman.id}
-              gentleman={gentleman}
-              toggleGentleman={toggleGentleman}
-              removeGentleman={removeGentleman}
-            />
-          ))}
-        </ul>
+        <Gentlemen
+          gentlemen={gentlemen}
+          removeGentleman={removeGentleman}
+          toggleGentleman={toggleGentleman}
+        />
       </main>
     </div>
   );

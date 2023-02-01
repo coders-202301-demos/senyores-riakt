@@ -1,7 +1,7 @@
-import { Gentlemen } from "../../data/types";
+import { GentlemenStructure } from "../../data/types";
 
 interface InfoProps {
-  gentlemen: Gentlemen;
+  gentlemen: GentlemenStructure;
 }
 
 const Info = ({ gentlemen }: InfoProps): JSX.Element => {

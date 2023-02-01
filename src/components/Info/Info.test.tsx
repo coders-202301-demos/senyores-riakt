@@ -1,11 +1,11 @@
 import { screen, render } from "@testing-library/react";
-import { Gentlemen } from "../../data/types";
+import { GentlemenStructure } from "../../data/types";
 import Info from "./Info";
 
 describe("Given an Info component", () => {
   describe("When it receives a list of three gentlemen with two of them selected", () => {
     test("Then it should show '2 gentlemen pointing at you'", () => {
-      const gentlemen: Gentlemen = [
+      const gentlemen: GentlemenStructure = [
         {
           id: 1,
           name: "Marc",
