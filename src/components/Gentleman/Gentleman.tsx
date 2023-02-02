@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { GentlemanStructure } from "../../data/types";
+import { removeGentlemanActionCreator } from "../../store/actions/gentlemen/gentlemenActionCreators";
+import GentlemenContext from "../../store/contexts/gentlemen/GentlemenContext";
 
 interface GentlemanProps {
   gentleman: GentlemanStructure;
   toggleGentleman: (gentleman: GentlemanStructure) => void;
-  removeGentleman: (gentleman: GentlemanStructure) => void;
 }
 
 const Gentleman = ({
@@ -19,8 +20,9 @@ const Gentleman = ({
     selected,
   },
   toggleGentleman,
-  removeGentleman,
 }: GentlemanProps): JSX.Element => {
+  const { dispatch } = useContext(GentlemenContext);
+
   const initial = useMemo(() => {
     const nameParts = name.split(" ");
 
@@ -29,12 +31,23 @@ const Gentleman = ({
       : nameParts[1][0].toUpperCase();
   }, [name]);
 
-  const handleRemoveGentleman = (
+  const handleRemoveGentleman = async (
     event: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
     event.stopPropagation();
 
-    removeGentleman(gentleman);
+    const response = await fetch(
+      `${process.env.REACT_APP_URL_API}${gentleman.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      return;
+    }
+
+    dispatch(removeGentlemanActionCreator(gentleman));
   };
 
   return (

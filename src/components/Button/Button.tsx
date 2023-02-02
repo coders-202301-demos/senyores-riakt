@@ -1,8 +1,14 @@
-interface ButtonProps {
-  selectAll: () => void;
-}
+import { useContext } from "react";
+import { selectAllGentlemenActionCreator } from "../../store/actions/gentlemen/gentlemenActionCreators";
+import GentlemenContext from "../../store/contexts/gentlemen/GentlemenContext";
 
-const Button = ({ selectAll }: ButtonProps): JSX.Element => {
+const Button = (): JSX.Element => {
+  const { dispatch } = useContext(GentlemenContext);
+
+  const selectAll = () => {
+    dispatch(selectAllGentlemenActionCreator());
+  };
+
   return (
     <button className="button button--select" onClick={selectAll}>
       Select all

@@ -1,29 +1,23 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Info from "./components/Info/Info";
 import { GentlemanStructure, GentlemenStructure } from "./data/types";
 import Button from "./components/Button/Button";
 import Gentlemen from "./components/Gentlemen/Gentlemen";
+import GentlemenContext from "./store/contexts/gentlemen/GentlemenContext";
+import { loadGentlemenActionCreator } from "./store/actions/gentlemen/gentlemenActionCreators";
 
 const App = (): JSX.Element => {
-  const [gentlemen, setGentlemen] = useState<GentlemenStructure>([]);
+  const [, setGentlemen] = useState<GentlemenStructure>([]);
+  const { gentlemen, dispatch } = useContext(GentlemenContext);
 
   useEffect(() => {
     (async () => {
       const response = await fetch(process.env.REACT_APP_URL_API!);
       const gentlemenApi = (await response.json()) as GentlemenStructure;
 
-      setGentlemen(gentlemenApi);
+      dispatch(loadGentlemenActionCreator(gentlemenApi));
     })();
-  }, []);
-
-  const selectAllGentlemen = () => {
-    setGentlemen(
-      gentlemen.map((gentleman) => ({
-        ...gentleman,
-        selected: true,
-      }))
-    );
-  };
+  }, [dispatch]);
 
   const toggleGentleman = (gentlemanToToggle: GentlemanStructure) => {
     setGentlemen(
@@ -37,23 +31,6 @@ const App = (): JSX.Element => {
     );
   };
 
-  const removeGentleman = async (gentlemanToRemove: GentlemanStructure) => {
-    const response = await fetch(
-      `${process.env.REACT_APP_URL_API}${gentlemanToRemove.id}`,
-      {
-        method: "DELETE",
-      }
-    );
-
-    if (!response.ok) {
-      return;
-    }
-
-    setGentlemen(
-      gentlemen.filter((gentleman) => gentleman.id !== gentlemanToRemove.id)
-    );
-  };
-
   return (
     <div className="container">
       <header className="main-header">
@@ -61,14 +38,10 @@ const App = (): JSX.Element => {
       </header>
       <section className="controls">
         <Info gentlemen={gentlemen} />
-        <Button selectAll={selectAllGentlemen} />
+        <Button />
       </section>
       <main className="main">
-        <Gentlemen
-          gentlemen={gentlemen}
-          removeGentleman={removeGentleman}
-          toggleGentleman={toggleGentleman}
-        />
+        <Gentlemen gentlemen={gentlemen} toggleGentleman={toggleGentleman} />
       </main>
     </div>
   );
